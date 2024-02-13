@@ -17,7 +17,9 @@ jobs:
       - name: Compare remote and local versions
         run: |
           REMOTE_VERSION=`echo $(git describe --tags --abbrev=0) | cut -c 2-`
-          LOCAL_VERSION=`echo $(cat pyproject.toml | grep ^version | cut -d '"' -f 2) | cut -c 11-`
+          LOCAL_VERSION=`echo cat pyproject.toml | grep ^version | cut -d '"' -f 2`
+          echo $REMOTE_VERSION
+          echo $LOCAL_VERSION
           if [ "$REMOTE_VERSION" = "$LOCAL_VERSION" ]; then
             echo "Versions are same"
             exit 0
