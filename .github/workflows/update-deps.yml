@@ -55,20 +55,20 @@ jobs:
           body: |
             ### Updated dependencies:
 
-            ```bash
+            ```
             ${{ steps.update.outputs.POETRY_UPDATED }}
             ```   
 
             ### Outdated dependencies _before_ PR:
 
-            ```bash
+            ```
             ${{ steps.outdated_before.outputs.POETRY_OUTDATED_BEFORE }}
             ```
 
             ### Outdated dependencies _after_ PR:
 
-            ```bash
+            ```
             ${{ steps.outdated_after.outputs.POETRY_OUTDATED_AFTER }}
             ```
-          branch: poetry-update
+          branch: chore/update-deps
           labels: dependencies
