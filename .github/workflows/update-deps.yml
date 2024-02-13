@@ -1,4 +1,4 @@
-name: Update dependencies and pre-commits
+name: Update dependencies & pre-commits
 
 on:
   schedule:
@@ -17,7 +17,7 @@ jobs:
       - name: Install poetry
         uses: Gr1N/setup-poetry@v8
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --with dev
         shell: bash
       - name: Check for outdated dependencies before update
         run: |
