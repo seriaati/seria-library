@@ -1,0 +1,26 @@
+[project]
+requires-python = ">=3.11"
+
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E","W","C90","F","UP","B","SIM","I","N","TCH",
+    "ANN","ASYNC","A","C4","EM","FA","ICN","G",
+    "PIE","T20","ARG","ERA","LOG","PL","TRY"
+]
+ignore = [
+    "E501","ANN401","ANN101","ANN102","ANN003",
+    "PLR0913","PLR2004","PLR0917","PLR6301",
+    "ANN002"
+]
+preview = true
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F403"]
+"playground.*.py" = ["ALL"]
+
+[tool.ruff.lint.flake8-type-checking]
+quote-annotations = true
