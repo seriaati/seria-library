@@ -1,4 +1,4 @@
-name: poetry-update
+name: Update dependencies and pre-commits
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update:
+  update-deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
           echo "$POETRY_OUTDATED_BEFORE" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
-        id: outdated
+        id: outdated_before
       - name: Update dependencies
         run: |
           POETRY_UPDATED=$(poetry update)
@@ -43,6 +43,10 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
         id: outdated_after
+      - name: Check for pre-commit updates
+        run: |
+          poetry run pre-commit autoupdate
+        shell: bash
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
@@ -58,7 +62,7 @@ jobs:
             ### Outdated dependencies _before_ PR:
 
             ```bash
-            ${{ steps.outdated.outputs.POETRY_OUTDATED }}
+            ${{ steps.outdated_before.outputs.POETRY_OUTDATED_BEFORE }}
             ```
 
             ### Outdated dependencies _after_ PR:
