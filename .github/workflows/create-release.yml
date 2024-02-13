@@ -19,11 +19,14 @@ jobs:
           template-config: https://raw.githubusercontent.com/seriaati/seria-library/main/cliff-template.toml
           args: --latest --strip header
         id: git-cliff
-      - name: 
-        run: echo "CONTENT=$(cat HISTORY.md)" >> $GITHUB_OUTPUT
+      - name: Get changelog content
+        run: |
+          echo "content<<EOF" >>$GITHUB_OUTPUT
+          cat "HISTORY.md" >>$GITHUB_OUTPUT
+          echo "EOF" >>$GITHUB_OUTPUT
         shell: bash
-        id: changelog-content
+        id: get-content
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          body: ${{ steps.changelog-content.outputs.CONTENT }}
+          body: ${{ steps.get-content.outputs.content }}
