@@ -20,6 +20,6 @@ jobs:
           args: --latest --strip header
         id: git-cliff
       - name: Create Release
-        uses: ncipollo/release-action@v1
+        uses: softprops/action-gh-release@v1
         with:
           body: ${{ steps.git-cliff.outputs.content }}
