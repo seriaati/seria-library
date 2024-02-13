@@ -29,9 +29,9 @@ jobs:
         run: |
           OLD_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
           OLD_VERSION="\"$OLD_VERSION\""
-          NEW_VERSION="\"${{ steps.save-tag.outputs.GITHUB_REF_NAME  }}\""
-          NEW_VERSION_WITHOUT_V=`echo $NEW_VERSION | cut -c 2-`
-          sed -i "s+version = $OLD_VERSION+version = \"$NEW_VERSION_WITHOUT_V+g" pyproject.toml
+          NEW_VERSION=`echo ${{ steps.save-tag.outputs.GITHUB_REF_NAME  }} | sed 's/v//'`
+          NEW_VERSION="\"$NEW_VERSION\""
+          sed -i "s+version = $OLD_VERSION+version = $NEW_VERSION_WITHOUT_V+g" pyproject.toml
         shell: bash
         id: update-version
       - name: Commit and push the changes
