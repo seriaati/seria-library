@@ -1,0 +1,29 @@
+name: create-release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_body: ${{ steps.git-cliff.outputs.content }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate changelog with git-cliff
+        uses: tj-actions/git-cliff@v1
+        with:
+          template-config: https://raw.githubusercontent.com/seriaati/seria-library/main/cliff-template.toml
+          args: --latest --strip header
+        id: git-cliff
+      - name: Create Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: binary_release.zip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          body: ${{ steps.git-cliff.outputs.content }}
