@@ -16,8 +16,7 @@ jobs:
         id: save-tag
       - name: Compare remote and local versions
         run: |
-          REMOTE_VERSION=`echo $GITHUB_REF_NAME | cut -c 2-`
-          echo $GITHUB_REF_NAME
+          REMOTE_VERSION=`echo $(git describe --tags --abbrev=0) | cut -c 2-`
           LOCAL_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
           echo $REMOTE_VERSION
           echo $LOCAL_VERSION
