@@ -15,8 +15,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install poetry
-        uses: snok/install-poetry@v1
-      - run: poetry install
+        run: pipx install poetry
+      - name: Install depdenencies
+        run: poetry install
       - name: Check for outdated dependencies before update
         run: |
           POETRY_OUTDATED_BEFORE=$(poetry show --outdated)
