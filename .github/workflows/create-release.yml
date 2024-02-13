@@ -2,8 +2,8 @@ name: create-release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -13,35 +13,28 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Save current tag name
+        id: save-tag
+      - name: Compare remote and local versions
         run: |
-          echo "GITHUB_REF_NAME<<EOF" >> $GITHUB_OUTPUT
-          echo "$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
+          REMOTE_VERSION=`echo $GITHUB_REF_NAME | cut -c 2-`
+          LOCAL_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
+          if [ "$REMOTE_VERSION" = "$LOCAL_VERSION" ]; then
+            echo "Versions are same"
+            exit 0
+          fi
+          echo "LOCAL_VERSION<<EOF" >> $GITHUB_OUTPUT
+          echo "$LOCAL_VERSION" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
-        id: save-tag
-      - name: Delete current local and remote tag
+        id: compare-versions
+      - name: Create tag
         run: |
-          git tag -d $GITHUB_REF_NAME
-          git push --delete origin $GITHUB_REF_NAME
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag v${{ steps.compare-versions.outputs.LOCAL_VERSION }}"
+          git push origin v${{ steps.compare-versions.outputs.LOCAL_VERSION }}
         shell: bash
-      - name: Update version number
-        run: |
-          OLD_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
-          OLD_VERSION="\"$OLD_VERSION\""
-          NEW_VERSION=`echo ${{ steps.save-tag.outputs.GITHUB_REF_NAME  }} | sed 's/v//'`
-          NEW_VERSION="\"$NEW_VERSION\""
-          sed -i "s+version = $OLD_VERSION+version = $NEW_VERSION_WITHOUT_V+g" pyproject.toml
-        shell: bash
-        id: update-version
-      - name: Commit and push the changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: "chore(ver): Bump version number to ${{ steps.save-tag.outputs.GITHUB_REF_NAME }}"
-          add: "pyproject.toml"
-          default_author: github_actions
-          tag: ${{ steps.save-tag.outputs.GITHUB_REF_NAME }}
-          push: origin HEAD:main
+        id: create-tag
       - name: Generate changelog
         uses: tj-actions/git-cliff@v1
         with:
@@ -56,6 +49,6 @@ jobs:
         shell: bash
         id: get-content
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
           body: ${{ steps.get-content.outputs.content }}
