@@ -12,7 +12,9 @@ __all__ = ("setup_logging",)
 
 
 @contextlib.contextmanager
-def setup_logging(level: int, loggers_to_disable: "Sequence[str]") -> "Generator[None, None, None]":
+def setup_logging(
+    level: int, loggers_to_disable: "Sequence[str] | None" = None
+) -> "Generator[None, None, None]":
     log = logging.getLogger()
 
     try:
@@ -21,8 +23,9 @@ def setup_logging(level: int, loggers_to_disable: "Sequence[str]") -> "Generator
         max_bytes = 32 * 1024 * 1024
         logging.getLogger("discord").setLevel(level)
 
-        for logger in loggers_to_disable:
-            logging.getLogger(logger).setLevel(logging.WARNING)
+        if loggers_to_disable is not None:
+            for logger in loggers_to_disable:
+                logging.getLogger(logger).setLevel(logging.WARNING)
 
         log.setLevel(level)
 
