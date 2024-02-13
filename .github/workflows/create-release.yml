@@ -24,11 +24,12 @@ jobs:
         run: |
           git tag -d $GITHUB_REF_NAME
           git push --delete origin $GITHUB_REF_NAME
+        shell: bash
       - name: Update version number
         run: |
           OLD_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
           OLD_VERSION="\"$OLD_VERSION\""
-          NEW_VERSION="\"${{ steps.save-tag.outputs.GITHUB_REF_NAME  }} \""
+          NEW_VERSION="\"${{ steps.save-tag.outputs.GITHUB_REF_NAME  }}\""
           NEW_VERSION_WITHOUT_V=`echo $NEW_VERSION | cut -c 2-`
           sed -i "s+version = $OLD_VERSION+version = $NEW_VERSION_WITHOUT_V+g" pyproject.toml
         shell: bash
