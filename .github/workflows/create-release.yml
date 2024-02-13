@@ -25,13 +25,23 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
         id: update-version
+      - name: Delete current local and remove tag
+        run: |
+          git tag -d $GITHUB_REF_NAME
+          git push --tag
+          git push --delete origin $GITHUB_REF_NAME
+        shell: bash
       - name: Commit version number change
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add pyproject.toml
           git commit -m "chore(ver): Bump version to ${{ steps.update-version.outputs.NEW_VERSION }}"
-          git push origin HEAD:main
+          git push origin
+      - name: Create the tag back
+        run: |
+          git tag ${{ steps.update-version.outputs.NEW_VERSION }}
+          git push origin --tags
       - name: Generate changelog with git-cliff
         uses: tj-actions/git-cliff@v1
         with:
