@@ -19,11 +19,9 @@ jobs:
         with:
           template-config: https://raw.githubusercontent.com/seriaati/seria-library/main/cliff-template.toml
           args: --latest --strip header
+          output: ""
         id: git-cliff
       - name: Create Release
-        uses: svenstaro/upload-release-action@v2
+        uses: ncipollo/release-action@v1
         with:
-          file: binary_release.zip
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
           body: ${{ steps.git-cliff.outputs.content }}
