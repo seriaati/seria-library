@@ -18,6 +18,8 @@ jobs:
         run: |
           REMOTE_VERSION=`echo $GITHUB_REF_NAME | cut -c 2-`
           LOCAL_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
+          echo $REMOTE_VERSION
+          echo $LOCAL_VERSION
           if [ "$REMOTE_VERSION" = "$LOCAL_VERSION" ]; then
             echo "Versions are same"
             exit 0
@@ -31,7 +33,7 @@ jobs:
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag v${{ steps.compare-versions.outputs.LOCAL_VERSION }}"
+          git tag v${{ steps.compare-versions.outputs.LOCAL_VERSION }}
           git push origin v${{ steps.compare-versions.outputs.LOCAL_VERSION }}
         shell: bash
         id: create-tag
