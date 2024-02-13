@@ -18,15 +18,27 @@ jobs:
         uses: snok/install-poetry@v1
       - run: poetry install
       - name: Check for outdated dependencies before update
-        run: echo "POETRY_OUTDATED_BEFORE=$(poetry show --outdated)" >> $GITHUB_OUTPUT
+        run: |
+          POETRY_OUTDATED_BEFORE=$(poetry show --outdated)
+          echo "POETRY_OUTDATED_BEFORE<<EOF" >> $GITHUB_OUTPUT
+          echo "$POETRY_OUTDATED_BEFORE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
         id: outdated
       - name: Update dependencies
-        run: echo "POETRY_UPDATED=$(poetry update)" >> $GITHUB_OUTPUT
+        run: |
+          POETRY_UPDATED=$(poetry update)
+          echo "POETRY_UPDATED<<EOF" >> $GITHUB_OUTPUT
+          echo "$POETRY_UPDATED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
         id: update
       - name: Check for outdated dependencies after update
-        run: echo "POETRY_OUTDATED_AFTER=$(poetry show --outdated)" >> $GITHUB_OUTPUT
+        run: |
+          POETRY_OUTDATED_AFTER=$(poetry show --outdated)
+          echo "POETRY_OUTDATED_AFTER<<EOF" >> $GITHUB_OUTPUT
+          echo "$POETRY_OUTDATED_AFTER" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
         id: outdated_after
       - name: Create Pull Request
