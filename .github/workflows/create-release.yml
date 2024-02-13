@@ -18,8 +18,6 @@ jobs:
         run: |
           REMOTE_VERSION=`echo $(git describe --tags --abbrev=0) | cut -c 2-`
           LOCAL_VERSION=`echo $(cat pyproject.toml | grep ^version | cut -d '"' -f 2) | cut -c 11-`
-          echo $REMOTE_VERSION
-          echo $LOCAL_VERSION
           if [ "$REMOTE_VERSION" = "$LOCAL_VERSION" ]; then
             echo "Versions are same"
             exit 0
@@ -29,21 +27,15 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
         id: compare-versions
-      - name: Create tag
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag v${{ steps.compare-versions.outputs.LOCAL_VERSION }}
-          git push origin v${{ steps.compare-versions.outputs.LOCAL_VERSION }}
-        shell: bash
-        id: create-tag
       - name: Generate changelog
+        if: steps.compare-versions.outputs.LOCAL_VERSION != ''
         uses: tj-actions/git-cliff@v1
         with:
           template-config: https://raw.githubusercontent.com/seriaati/seria-library/main/cliff-template.toml
           args: --latest --strip header
         id: git-cliff
       - name: Get changelog content
+        if: steps.compare-versions.outputs.LOCAL_VERSION != '' 
         run: |
           echo "content<<EOF" >>$GITHUB_OUTPUT
           cat "HISTORY.md" >>$GITHUB_OUTPUT
@@ -51,6 +43,8 @@ jobs:
         shell: bash
         id: get-content
       - name: Create Release
+        if: steps.compare-versions.outputs.LOCAL_VERSION != ''
         uses: softprops/action-gh-release@4634c16e79c963813287e889244c50009e7f0981
         with:
           body: ${{ steps.get-content.outputs.content }}
+          tag_name: v${{ steps.compare-versions.outputs.LOCAL_VERSION }}
