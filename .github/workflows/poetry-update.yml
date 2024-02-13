@@ -9,12 +9,14 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Install poetry
-        uses: snok/install-poetry@v1
-      - name: Install depdenencies
+        uses: Gr1N/setup-poetry@v8
+      - name: Install dependencies
         run: poetry install
       - name: Check for outdated dependencies before update
         run: |
