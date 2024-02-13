@@ -9,8 +9,6 @@ on:
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    outputs:
-      release_body: ${{ steps.git-cliff.outputs.content }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,7 +18,6 @@ jobs:
         with:
           template-config: https://raw.githubusercontent.com/seriaati/seria-library/main/cliff-template.toml
           args: --latest --strip header
-          output: ""
         id: git-cliff
       - name: Create Release
         uses: ncipollo/release-action@v1
