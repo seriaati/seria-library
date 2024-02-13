@@ -17,6 +17,7 @@ jobs:
       - name: Compare remote and local versions
         run: |
           REMOTE_VERSION=`echo $GITHUB_REF_NAME | cut -c 2-`
+          echo $GITHUB_REF_NAME
           LOCAL_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
           echo $REMOTE_VERSION
           echo $LOCAL_VERSION
