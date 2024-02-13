@@ -18,6 +18,7 @@ jobs:
         uses: Gr1N/setup-poetry@v8
       - name: Install dependencies
         run: poetry install
+        shell: bash
       - name: Check for outdated dependencies before update
         run: |
           POETRY_OUTDATED_BEFORE=$(poetry show --outdated)
