@@ -4,7 +4,8 @@ from typing import Any, TypeVar
 import aiofiles
 import orjson
 import yaml
-from constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
+
+from .constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
 
 __all__ = (
     "split_list_to_chunks",
