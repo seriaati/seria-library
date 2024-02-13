@@ -8,6 +8,7 @@ description = "Seria's library (of code)"
 authors = ["seriaati <seria.ati@gmail.com>"]
 license = "GPL-3.0"
 readme = "README.md"
+packages = [{include = "seria"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -17,6 +18,7 @@ python-dotenv = "^1.0.1"
 jishaku = "^2.5.2"
 aiofiles = "^23.2.1"
 pyyaml = "^6.0.1"
+orjson = "^3.9.13"
 
 [tool.poetry.group.dev]
 optional = true
