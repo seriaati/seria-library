@@ -13,35 +13,35 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Update version number
+      - name: Save current tag name
         run: |
-          OLD_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
-          OLD_VERSION="\"$OLD_VERSION\""
-          NEW_VERSION="\"$GITHUB_REF_NAME \""
-          NEW_VERSION_WITHOUT_V=`echo $NEW_VERSION | cut -c 2-`
-          sed -i "s+version = $OLD_VERSION+version = $NEW_VERSION_WITHOUT_V+g" pyproject.toml
-          echo "NEW_VERSION<<EOF" >> $GITHUB_OUTPUT
-          echo "$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "GITHUB_REF_NAME<<EOF" >> $GITHUB_OUTPUT
+          echo "$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
         shell: bash
-        id: update-version
-      - name: Commit version number change
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add pyproject.toml
-          git commit -m "chore(ver): Bump version number"
-          git push origin HEAD:main
+        id: save-tag
       - name: Delete current local and remote tag
         run: |
           git tag -d $GITHUB_REF_NAME
           git push --delete origin $GITHUB_REF_NAME
-        shell: bash
-      - name: Create the tag back
+      - name: Update version number
         run: |
-          git tag ${{ steps.update-version.outputs.NEW_VERSION }}
-          git push origin --tags
-      - name: Generate changelog with git-cliff
+          OLD_VERSION=`cat pyproject.toml | grep ^version | cut -d '"' -f 2`
+          OLD_VERSION="\"$OLD_VERSION\""
+          NEW_VERSION="\"${{ steps.save-tag.outputs.GITHUB_REF_NAME  }} \""
+          NEW_VERSION_WITHOUT_V=`echo $NEW_VERSION | cut -c 2-`
+          sed -i "s+version = $OLD_VERSION+version = $NEW_VERSION_WITHOUT_V+g" pyproject.toml
+        shell: bash
+        id: update-version
+      - name: Commit and push the changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "chore(ver): Bump version number to ${{ steps.save-tag.outputs.GITHUB_REF_NAME }}"
+          add: "pyproject.toml"
+          default_author: github_actions
+          tag: ${{ steps.save-tag.outputs.GITHUB_REF_NAME }}
+          push: true
+      - name: Generate changelog
         uses: tj-actions/git-cliff@v1
         with:
           template-config: https://raw.githubusercontent.com/seriaati/seria-library/main/cliff-template.toml
