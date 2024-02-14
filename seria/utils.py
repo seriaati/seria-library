@@ -8,6 +8,7 @@ import yaml
 from .constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
 
 __all__ = (
+    "clean_url",
     "split_list_to_chunks",
     "extract_urls",
     "extract_image_urls",
@@ -24,14 +25,20 @@ __all__ = (
 T = TypeVar("T")
 
 
+def clean_url(url: str) -> str:
+    """Remove query parameters from the URL."""
+    return url.split("?")[0]
+
+
 def split_list_to_chunks(lst: list[T], chunk_size: int) -> list[list[T]]:
     return [lst[i : i + chunk_size] for i in range(0, len(lst), chunk_size)]
 
 
 def extract_urls(text: str) -> list[str]:
-    return re.findall(
+    urls = re.findall(
         r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", text
     )
+    return [clean_url(url) for url in urls]
 
 
 def extract_image_urls(text: str) -> list[str]:
