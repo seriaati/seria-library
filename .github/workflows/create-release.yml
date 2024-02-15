@@ -1,8 +1,9 @@
-name: Update dependencies & pre-commits
+name: Create release
 
 on:
-  schedule:
-    - cron: '0 0 * * 1' # every Monday at 00:00
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -11,7 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Update dependencies & pre-commits
-        uses: seriaati/update-deps@main
+        with:
+          fetch-depth: 0
         
+      - name: Create release
+        uses: seriaati/create-release@main
