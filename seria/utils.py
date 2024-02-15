@@ -44,11 +44,15 @@ def extract_urls(text: str, *, clean: bool = True) -> list[str]:
 
 
 def extract_image_urls(text: str, *, clean: bool = True) -> list[str]:
-    return [url for url in extract_urls(text, clean=clean) if url.endswith(IMAGE_EXTENSIONS)]
+    return [
+        url for url in extract_urls(text, clean=clean) if clean_url(url).endswith(IMAGE_EXTENSIONS)
+    ]
 
 
 def extract_video_urls(text: str, *, clean: bool = True) -> list[str]:
-    return [url for url in extract_urls(text, clean=clean) if url.endswith(VIDEO_EXTENSIONS)]
+    return [
+        url for url in extract_urls(text, clean=clean) if clean_url(url).endswith(VIDEO_EXTENSIONS)
+    ]
 
 
 def extract_media_urls(text: str, *, clean: bool = True) -> list[str]:
