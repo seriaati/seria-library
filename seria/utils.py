@@ -34,23 +34,25 @@ def split_list_to_chunks(lst: list[T], chunk_size: int) -> list[list[T]]:
     return [lst[i : i + chunk_size] for i in range(0, len(lst), chunk_size)]
 
 
-def extract_urls(text: str) -> list[str]:
+def extract_urls(text: str, *, clean: bool = False) -> list[str]:
     urls = re.findall(
         r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", text
     )
-    return [clean_url(url) for url in urls]
+    if clean:
+        return [clean_url(url) for url in urls]
+    return urls
 
 
-def extract_image_urls(text: str) -> list[str]:
-    return [url for url in extract_urls(text) if url.endswith(IMAGE_EXTENSIONS)]
+def extract_image_urls(text: str, *, clean: bool = False) -> list[str]:
+    return [url for url in extract_urls(text, clean=clean) if url.endswith(IMAGE_EXTENSIONS)]
 
 
-def extract_video_urls(text: str) -> list[str]:
-    return [url for url in extract_urls(text) if url.endswith(VIDEO_EXTENSIONS)]
+def extract_video_urls(text: str, *, clean: bool = False) -> list[str]:
+    return [url for url in extract_urls(text, clean=clean) if url.endswith(VIDEO_EXTENSIONS)]
 
 
-def extract_media_urls(text: str) -> list[str]:
-    return extract_image_urls(text) + extract_video_urls(text)
+def extract_media_urls(text: str, *, clean: bool = False) -> list[str]:
+    return extract_image_urls(text, clean=clean) + extract_video_urls(text, clean=clean)
 
 
 async def read_yaml(path: str, *, encoding: str = "utf-8") -> Any:
