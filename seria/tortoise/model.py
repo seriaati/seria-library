@@ -1,3 +1,4 @@
+import contextlib
 from typing import Any, Self
 
 from tortoise.exceptions import DoesNotExist, IntegrityError
@@ -20,3 +21,7 @@ class Model(TortoiseModel):
             return await cls.create(**kwargs)
         except IntegrityError:
             return None
+
+    async def silent_save(self, **kwargs: Any) -> None:
+        with contextlib.suppress(IntegrityError):
+            return await super().save(**kwargs)
