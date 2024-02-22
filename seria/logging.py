@@ -13,7 +13,10 @@ __all__ = ("setup_logging",)
 
 @contextlib.contextmanager
 def setup_logging(
-    level: int, loggers_to_disable: "Sequence[str] | None" = None
+    level: int,
+    *,
+    loggers_to_suppress: "Sequence[str] | None" = None,
+    log_filename: str = "log.log",
 ) -> "Generator[None, None, None]":
     log = logging.getLogger()
 
@@ -23,14 +26,14 @@ def setup_logging(
         max_bytes = 32 * 1024 * 1024
         logging.getLogger("discord").setLevel(level)
 
-        if loggers_to_disable is not None:
-            for logger in loggers_to_disable:
+        if loggers_to_suppress is not None:
+            for logger in loggers_to_suppress:
                 logging.getLogger(logger).setLevel(logging.WARNING)
 
         log.setLevel(level)
 
         handler = logging.handlers.RotatingFileHandler(
-            filename="hoyo_buddy.log",
+            filename=log_filename,
             encoding="utf-8",
             mode="w",
             maxBytes=max_bytes,
