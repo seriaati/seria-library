@@ -24,7 +24,7 @@ def setup_logging(
         discord.utils.setup_logging()
 
         max_bytes = 32 * 1024 * 1024
-        logging.getLogger("discord").setLevel(level)
+        logging.getLogger("discord").setLevel(logging.INFO)
 
         if loggers_to_suppress is not None:
             for logger in loggers_to_suppress:
