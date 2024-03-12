@@ -1,3 +1,4 @@
+import os
 import re
 from typing import Any, TypeVar
 
@@ -59,22 +60,40 @@ def extract_media_urls(text: str, *, clean: bool = True) -> list[str]:
     return extract_image_urls(text, clean=clean) + extract_video_urls(text, clean=clean)
 
 
-async def read_yaml(path: str, *, encoding: str = "utf-8") -> Any:
-    async with aiofiles.open(path, mode="r", encoding=encoding) as file:
-        return yaml.safe_load(await file.read())
+async def read_yaml(
+    path: str, *, encoding: str = "utf-8", handle_file_not_found: bool = True
+) -> Any:
+    try:
+        async with aiofiles.open(path, mode="r", encoding=encoding) as file:
+            return yaml.safe_load(await file.read())
+    except FileNotFoundError:
+        if handle_file_not_found:
+            return {}
+        raise
 
 
 async def write_yaml(path: str, data: dict, *, encoding: str = "utf-8") -> None:
+    if not os.path.exists(os.path.dirname(path)):
+        os.makedirs(os.path.dirname(path))
     async with aiofiles.open(path, mode="w", encoding=encoding) as file:
         await file.write(yaml.dump(data))
 
 
-async def read_json(path: str, *, encoding: str = "utf-8") -> Any:
-    async with aiofiles.open(path, mode="r", encoding=encoding) as file:
-        return orjson.loads(await file.read())
+async def read_json(
+    path: str, *, encoding: str = "utf-8", handle_file_not_found: bool = True
+) -> Any:
+    try:
+        async with aiofiles.open(path, mode="r", encoding=encoding) as file:
+            return orjson.loads(await file.read())
+    except FileNotFoundError:
+        if handle_file_not_found:
+            return {}
+        raise
 
 
 async def write_json(path: str, data: Any, *, encoding: str = "utf-8") -> None:
+    if not os.path.exists(os.path.dirname(path)):
+        os.makedirs(os.path.dirname(path))
     async with aiofiles.open(path, mode="w", encoding=encoding) as file:
         await file.write(orjson.dumps(data).decode(encoding))
 
