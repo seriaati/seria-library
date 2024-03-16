@@ -28,7 +28,7 @@ def setup_logging(
 
         if loggers_to_suppress is not None:
             for logger in loggers_to_suppress:
-                logging.getLogger(logger).setLevel(logging.WARNING)
+                logging.getLogger(logger).setLevel(logging.CRITICAL)
 
         log.setLevel(level)
 
