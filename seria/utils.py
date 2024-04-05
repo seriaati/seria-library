@@ -1,3 +1,4 @@
+import asyncio
 import os
 import re
 from typing import Any, TypeVar
@@ -24,6 +25,7 @@ __all__ = (
 )
 
 T = TypeVar("T")
+locks: dict[str, asyncio.Lock] = {}
 
 
 def clean_url(url: str) -> str:
@@ -60,42 +62,87 @@ def extract_media_urls(text: str, *, clean: bool = True) -> list[str]:
     return extract_image_urls(text, clean=clean) + extract_video_urls(text, clean=clean)
 
 
-async def read_yaml(
-    path: str, *, encoding: str = "utf-8", handle_file_not_found: bool = True
+async def _read_file(
+    path: str,
+    encoding: str = "utf-8",
+    handle_file_not_found: bool = True,
+    ignore_lock: bool = False,
 ) -> Any:
+    lock = locks.setdefault(path, asyncio.Lock()) if not ignore_lock else asyncio.Lock()
     try:
-        async with aiofiles.open(path, mode="r", encoding=encoding) as file:
-            return yaml.safe_load(await file.read())
+        async with lock, aiofiles.open(path, mode="r", encoding=encoding) as file:
+            if path.endswith(".json"):
+                return orjson.loads(await file.read())
+            elif path.endswith(".yaml"):
+                return yaml.safe_load(await file.read())
+            else:
+                return await file.read()
     except FileNotFoundError:
         if handle_file_not_found:
             return {}
         raise
 
 
-async def write_yaml(path: str, data: dict, *, encoding: str = "utf-8") -> None:
+async def _write_file(
+    path: str, data: Any, encoding: str = "utf-8", ignore_lock: bool = False
+) -> None:
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
-    async with aiofiles.open(path, mode="w", encoding=encoding) as file:
-        await file.write(yaml.dump(data))
+
+    lock = locks.setdefault(path, asyncio.Lock()) if not ignore_lock else asyncio.Lock()
+    async with lock, aiofiles.open(path, mode="w", encoding=encoding) as file:
+        if path.endswith(".json"):
+            await file.write(orjson.dumps(data).decode(encoding))
+        elif path.endswith(".yaml"):
+            await file.write(yaml.dump(data))
+        else:
+            await file.write(data)
+
+
+async def read_yaml(
+    path: str,
+    *,
+    encoding: str = "utf-8",
+    handle_file_not_found: bool = True,
+    ignore_lock: bool = False,
+) -> Any:
+    await _read_file(
+        path,
+        encoding=encoding,
+        handle_file_not_found=handle_file_not_found,
+        ignore_lock=ignore_lock,
+    )
+
+
+async def write_yaml(
+    path: str,
+    data: dict,
+    *,
+    encoding: str = "utf-8",
+    ignore_lock: bool = False,
+) -> None:
+    await _write_file(path, data, encoding=encoding, ignore_lock=ignore_lock)
 
 
 async def read_json(
-    path: str, *, encoding: str = "utf-8", handle_file_not_found: bool = True
+    path: str,
+    *,
+    encoding: str = "utf-8",
+    handle_file_not_found: bool = True,
+    ignore_lock: bool = False,
 ) -> Any:
-    try:
-        async with aiofiles.open(path, mode="r", encoding=encoding) as file:
-            return orjson.loads(await file.read())
-    except FileNotFoundError:
-        if handle_file_not_found:
-            return {}
-        raise
+    await _read_file(
+        path,
+        encoding=encoding,
+        handle_file_not_found=handle_file_not_found,
+        ignore_lock=ignore_lock,
+    )
 
 
-async def write_json(path: str, data: Any, *, encoding: str = "utf-8") -> None:
-    if not os.path.exists(os.path.dirname(path)):
-        os.makedirs(os.path.dirname(path))
-    async with aiofiles.open(path, mode="w", encoding=encoding) as file:
-        await file.write(orjson.dumps(data).decode(encoding))
+async def write_json(
+    path: str, data: Any, *, encoding: str = "utf-8", ignore_lock: bool = False
+) -> None:
+    await _write_file(path, data, encoding=encoding, ignore_lock=ignore_lock)
 
 
 def shorten(text: str, length: int) -> str:
