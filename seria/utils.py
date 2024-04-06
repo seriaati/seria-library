@@ -106,7 +106,7 @@ async def read_yaml(
     handle_file_not_found: bool = True,
     ignore_lock: bool = False,
 ) -> Any:
-    await _read_file(
+    return await _read_file(
         path,
         encoding=encoding,
         handle_file_not_found=handle_file_not_found,
@@ -131,7 +131,7 @@ async def read_json(
     handle_file_not_found: bool = True,
     ignore_lock: bool = False,
 ) -> Any:
-    await _read_file(
+    return await _read_file(
         path,
         encoding=encoding,
         handle_file_not_found=handle_file_not_found,
