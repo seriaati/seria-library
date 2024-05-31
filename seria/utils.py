@@ -3,26 +3,7 @@ import os
 import re
 from typing import Any, TypeVar
 
-import aiofiles
-import orjson
-import yaml
-
 from .constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
-
-__all__ = (
-    "clean_url",
-    "create_bullet_list",
-    "extract_image_urls",
-    "extract_media_urls",
-    "extract_urls",
-    "extract_video_urls",
-    "read_json",
-    "read_yaml",
-    "shorten",
-    "split_list_to_chunks",
-    "write_json",
-    "write_yaml",
-)
 
 T = TypeVar("T")
 locks: dict[str, asyncio.Lock] = {}
@@ -73,6 +54,10 @@ async def _read_file(
     handle_file_not_found: bool = True,
     ignore_lock: bool = False,
 ) -> Any:
+    import aiofiles
+    import orjson
+    import yaml
+
     lock = locks.setdefault(path, asyncio.Lock()) if not ignore_lock else asyncio.Lock()
     try:
         async with lock, aiofiles.open(path, mode="r", encoding=encoding) as file:
@@ -93,6 +78,10 @@ async def _write_file(
 ) -> None:
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
+
+    import aiofiles
+    import orjson
+    import yaml
 
     lock = locks.setdefault(path, asyncio.Lock()) if not ignore_lock else asyncio.Lock()
     async with lock, aiofiles.open(path, mode="w", encoding=encoding) as file:
