@@ -13,7 +13,7 @@ version = "1.5.0"
 
 [tool.poetry.dependencies]
 aiofiles = {version = "^23.2.1", optional = true}
-discord-py = {version = "^2.3.2", optional = true}
+discord-py = "^2.3.2"
 orjson = {version = "^3.9.13", optional = true}
 python = "^3.11"
 pyyaml = {version = "^6.0.1", optional = true}
@@ -21,7 +21,6 @@ tortoise-orm = {extras = ["asyncpg"], version = "^0.21.0"}
 
 [tool.poetry.extras]
 all = ["discord-py", "aiofiles", "orjson", "pyyaml", "tortoise-orm"]
-discord = ["discord-py"]
 files = ["aiofiles", "orjson", "pyyaml"]
 tortoise = ["tortoise-orm"]
 
