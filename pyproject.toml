@@ -19,7 +19,7 @@ orjson = "^3.9.13"
 python = "^3.11"
 python-dotenv = "^1.0.1"
 pyyaml = "^6.0.1"
-tortoise-orm = {extras = ["asyncpg"], version = "^0.20.0"}
+tortoise-orm = {extras = ["asyncpg"], version = "^0.21.0"}
 
 [tool.poetry.group.dev]
 optional = true
