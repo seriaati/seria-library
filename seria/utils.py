@@ -39,7 +39,8 @@ def split_list_to_chunks(lst: list[T], chunk_size: int) -> list[list[T]]:
 
 def extract_urls(text: str, *, clean: bool = True) -> list[str]:
     urls = re.findall(
-        r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", text
+        r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+        text,
     )
     if clean:
         return [clean_url(url) for url in urls]
@@ -48,13 +49,17 @@ def extract_urls(text: str, *, clean: bool = True) -> list[str]:
 
 def extract_image_urls(text: str, *, clean: bool = True) -> list[str]:
     return [
-        url for url in extract_urls(text, clean=clean) if clean_url(url).endswith(IMAGE_EXTENSIONS)
+        url
+        for url in extract_urls(text, clean=clean)
+        if clean_url(url).endswith(IMAGE_EXTENSIONS)
     ]
 
 
 def extract_video_urls(text: str, *, clean: bool = True) -> list[str]:
     return [
-        url for url in extract_urls(text, clean=clean) if clean_url(url).endswith(VIDEO_EXTENSIONS)
+        url
+        for url in extract_urls(text, clean=clean)
+        if clean_url(url).endswith(VIDEO_EXTENSIONS)
     ]
 
 
