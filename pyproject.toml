@@ -10,7 +10,7 @@ name = "seria-library"
 package-mode = false
 packages = [{include = "seria"}]
 readme = "README.md"
-version = "1.4.0"
+version = "1.5.0"
 
 [tool.poetry.dependencies]
 aiofiles = {version = "^23.2.1", optional = true}
