@@ -88,7 +88,7 @@ async def _write_file(
         if path.endswith(".json"):
             await file.write(orjson.dumps(data).decode(encoding))
         elif path.endswith(".yaml"):
-            await file.write(yaml.dump(data))
+            await file.write(yaml.dump(data, allow_unicode=True))
         else:
             await file.write(data)
 
