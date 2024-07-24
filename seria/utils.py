@@ -1,12 +1,13 @@
 import asyncio
 import os
 import re
+import weakref
 from typing import Any, TypeVar
 
 from .constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
 
 T = TypeVar("T")
-locks: dict[str, asyncio.Lock] = {}
+locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
 
 
 def clean_url(url: str) -> str:
@@ -76,7 +77,7 @@ async def _read_file(
 async def _write_file(
     path: str, data: Any, encoding: str = "utf-8", ignore_lock: bool = False
 ) -> None:
-    if not os.path.exists(os.path.dirname(path)):
+    if not os.path.exists(os.path.dirname(path)) and os.path.dirname(path):
         os.makedirs(os.path.dirname(path))
 
     import aiofiles
