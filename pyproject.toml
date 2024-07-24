@@ -9,7 +9,7 @@ license = "GPL-3.0"
 name = "seria-library"
 packages = [{include = "seria"}]
 readme = "README.md"
-version = "1.5.1"
+version = "1.5.2"
 
 [tool.poetry.dependencies]
 aiofiles = {version = "^24.0.0", optional = true}
