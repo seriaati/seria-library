@@ -7,6 +7,7 @@ from typing import Any, TypeVar
 from .constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
 
 T = TypeVar("T")
+
 locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
 
 
@@ -126,6 +127,14 @@ async def read_json(
     handle_file_not_found: bool = True,
     ignore_lock: bool = False,
 ) -> Any:
+    if "https" in path:
+        import aiohttp
+        import orjson
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(path) as response:
+                return await response.json(encoding=encoding, loads=orjson.loads)
+
     return await _read_file(
         path,
         encoding=encoding,
