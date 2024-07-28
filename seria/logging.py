@@ -3,8 +3,6 @@ import logging
 import logging.handlers
 from typing import TYPE_CHECKING
 
-import discord
-
 if TYPE_CHECKING:
     from collections.abc import Generator, Sequence
 
@@ -21,6 +19,8 @@ def setup_logging(
     log = logging.getLogger()
 
     try:
+        import discord
+
         discord.utils.setup_logging()
 
         max_bytes = 32 * 1024 * 1024
