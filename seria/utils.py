@@ -133,6 +133,8 @@ async def read_json(
 
         async with aiohttp.ClientSession() as session:
             async with session.get(path) as response:
+                if response.content_type == "text/plain":
+                    return orjson.loads(await response.text(encoding=encoding))
                 return await response.json(encoding=encoding, loads=orjson.loads)
 
     return await _read_file(
