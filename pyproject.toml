@@ -30,7 +30,7 @@ tortoise = ["tortoise-orm"]
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.6.0"
+ruff = "^0.7.0"
 
 [tool.poetry.group.linux]
 optional = true
