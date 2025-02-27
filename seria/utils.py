@@ -1,10 +1,28 @@
 import asyncio
 import os
+import pathlib
 import re
 import weakref
 from typing import Any, TypeVar
 
+import yarl
+
 from .constants import IMAGE_EXTENSIONS, VIDEO_EXTENSIONS
+
+__all__ = (
+    "clean_url",
+    "split_list_to_chunks",
+    "extract_urls",
+    "extract_image_urls",
+    "extract_video_urls",
+    "extract_media_urls",
+    "read_yaml",
+    "write_yaml",
+    "read_json",
+    "write_json",
+    "shorten",
+    "create_bullet_list",
+)
 
 T = TypeVar("T")
 
@@ -51,8 +69,9 @@ def extract_media_urls(text: str, *, clean: bool = True) -> list[str]:
 
 
 async def _read_file(
-    path: str,
+    path: pathlib.Path | str,
     encoding: str = "utf-8",
+    *,
     handle_file_not_found: bool = True,
     ignore_lock: bool = False,
 ) -> Any:
@@ -60,12 +79,16 @@ async def _read_file(
     import orjson
     import yaml
 
-    lock = locks.setdefault(path, asyncio.Lock()) if not ignore_lock else asyncio.Lock()
+    lock = (
+        locks.setdefault(str(path), asyncio.Lock())
+        if not ignore_lock
+        else asyncio.Lock()
+    )
     try:
         async with lock, aiofiles.open(path, mode="r", encoding=encoding) as file:
-            if path.endswith(".json"):
+            if str(path).endswith(".json"):
                 return orjson.loads(await file.read())
-            elif path.endswith(".yaml"):
+            elif str(path).endswith(".yaml"):
                 return yaml.safe_load(await file.read())
             else:
                 return await file.read()
@@ -76,7 +99,10 @@ async def _read_file(
 
 
 async def _write_file(
-    path: str, data: Any, encoding: str = "utf-8", ignore_lock: bool = False
+    path: pathlib.Path | str,
+    data: Any,
+    encoding: str = "utf-8",
+    ignore_lock: bool = False,
 ) -> None:
     if not os.path.exists(os.path.dirname(path)) and os.path.dirname(path):
         os.makedirs(os.path.dirname(path))
@@ -85,18 +111,22 @@ async def _write_file(
     import orjson
     import yaml
 
-    lock = locks.setdefault(path, asyncio.Lock()) if not ignore_lock else asyncio.Lock()
+    lock = (
+        locks.setdefault(str(path), asyncio.Lock())
+        if not ignore_lock
+        else asyncio.Lock()
+    )
     async with lock, aiofiles.open(path, mode="w", encoding=encoding) as file:
-        if path.endswith(".json"):
+        if str(path).endswith(".json"):
             await file.write(orjson.dumps(data).decode(encoding))
-        elif path.endswith(".yaml"):
+        elif str(path).endswith(".yaml"):
             await file.write(yaml.dump(data, allow_unicode=True))
         else:
             await file.write(data)
 
 
 async def read_yaml(
-    path: str,
+    path: pathlib.Path | str,
     *,
     encoding: str = "utf-8",
     handle_file_not_found: bool = True,
@@ -111,7 +141,7 @@ async def read_yaml(
 
 
 async def write_yaml(
-    path: str,
+    path: pathlib.Path | str,
     data: dict,
     *,
     encoding: str = "utf-8",
@@ -121,13 +151,15 @@ async def write_yaml(
 
 
 async def read_json(
-    path: str,
+    path: pathlib.Path | yarl.URL | str,
     *,
     encoding: str = "utf-8",
     handle_file_not_found: bool = True,
     ignore_lock: bool = False,
 ) -> Any:
-    if "https" in path:
+    if not isinstance(path, pathlib.Path) and (
+        isinstance(path, yarl.URL) or extract_urls(path)
+    ):
         import aiohttp
         import orjson
 
@@ -146,7 +178,11 @@ async def read_json(
 
 
 async def write_json(
-    path: str, data: Any, *, encoding: str = "utf-8", ignore_lock: bool = False
+    path: pathlib.Path | str,
+    data: Any,
+    *,
+    encoding: str = "utf-8",
+    ignore_lock: bool = False,
 ) -> None:
     await _write_file(path, data, encoding=encoding, ignore_lock=ignore_lock)
 
