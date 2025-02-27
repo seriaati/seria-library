@@ -1,6 +1,6 @@
 [project]
 name = "seria-library"
-version = "1.5.4"
+version = "1.5.5"
 description = "Seria's library (of code)"
 readme = "README.md"
 authors = [{ name = "seria", email = "seria.ati@gmail.com" }]
