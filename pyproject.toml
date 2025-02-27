@@ -1,47 +1,39 @@
 [project]
 name = "seria-library"
-requires-python = ">=3.11"
-
-[tool.poetry]
-authors = ["seriaati <seria.ati@gmail.com>"]
-description = "Seria's library (of code)"
-license = "GPL-3.0"
-name = "seria-library"
-packages = [{include = "seria"}]
-readme = "README.md"
 version = "1.5.4"
+description = "Seria's library (of code)"
+readme = "README.md"
+authors = [{ name = "seria", email = "seria.ati@gmail.com" }]
+requires-python = ">=3.11"
+dependencies = []
+license = { file = "LICENSE" }
 
-[tool.poetry.dependencies]
-aiofiles = {version = "^24.0.0", optional = true}
-aiohttp = {version = "^3.9.5", optional = true}
-discord-py = {version = "^2.3.2", optional = true}
-orjson = {version = "^3.9.13", optional = true}
-python = "^3.11"
-pyyaml = {version = "^6.0.1", optional = true}
-tortoise-orm = {extras = ["asyncpg"], version = "^0.24.0", optional = true}
+[project.optional-dependencies]
+all = [
+    "aiofiles>=24.1.0",
+    "discord-py>=2.5.0",
+    "orjson>=3.10.15",
+    "pyyaml>=6.0.2",
+    "tortoise-orm>=0.24.1",
+]
+dpy = ["discord-py>=2.5.0"]
+files = [
+    "aiofiles>=24.1.0",
+    "aiohttp>=3.11.13",
+    "orjson>=3.10.15",
+    "pyyaml>=6.0.2",
+]
+tortoise = ["tortoise-orm>=0.24.1"]
 
-[tool.poetry.extras]
-all = ["discord-py", "aiofiles", "orjson", "pyyaml", "tortoise-orm"]
-dpy = ["discord-py"]
-files = ["aiofiles", "orjson", "pyyaml", "aiohttp"]
-tortoise = ["tortoise-orm"]
 
-[tool.poetry.group.dev]
-optional = true
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.9.0"
-
-[tool.poetry.group.linux]
-optional = true
-
-[tool.poetry.group.linux.dependencies]
-uvloop = "^0.21.0"
+[tool.hatch.build.targets.wheel]
+packages = ["seria"]
 
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core"]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pyright]
 reportIncompatibleMethodOverride = false
 reportIncompatibleVariableOverride = false
+typeCheckingMode = "standard"
