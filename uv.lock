@@ -476,7 +476,7 @@ wheels = [
 
 [[package]]
 name = "seria-library"
-version = "0.1.0"
+version = "1.5.5"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -514,7 +514,7 @@ requires-dist = [
     { name = "tortoise-orm", marker = "extra == 'all'", specifier = ">=0.24.1" },
     { name = "tortoise-orm", marker = "extra == 'tortoise'", specifier = ">=0.24.1" },
 ]
-provides-extras = ["dpy", "files", "tortoise", "all"]
+provides-extras = ["all", "dpy", "files", "tortoise"]
 
 [[package]]
 name = "tortoise-orm"
